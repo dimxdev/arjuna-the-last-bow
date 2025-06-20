@@ -1,24 +1,24 @@
 package game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.sound.sampled.*;
+import javax.swing.*;
 
 public class EndingScene extends JPanel {
     private GameFrame frame;
     private Image background;
     private Clip sound;
-    private RoundedButton homeButton, exitButton;
+    private JButton homeButton, exitButton, mainLagiButton;
 
     public EndingScene(GameFrame frame) {
         this.frame = frame;
         setLayout(null);
 
-        // Load background image
-        background = new ImageIcon(getClass().getResource("/assets/images/ending-scene.png")).getImage();
+        // Background
+        background = new ImageIcon(getClass().getResource("/assets/images/ending-scene2.png")).getImage();
 
-        // Play win sound loop
+        // Suara
         try {
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource("/assets/sounds/win.wav"));
             sound = AudioSystem.getClip();
@@ -28,11 +28,16 @@ public class EndingScene extends JPanel {
             e.printStackTrace();
         }
 
-        // Tombol Home 🏠
-        homeButton = new RoundedButton("🏠");
-        homeButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        homeButton.setForeground(Color.BLACK);
-        homeButton.setBackground(new Color(255, 255, 255, 180));
+        // WARNA COKLAT
+        Color woodBrown = new Color(121, 85, 72);
+        Font buttonFont = new Font("SansSerif", Font.BOLD, 16);
+
+        // Tombol HOME
+        homeButton = new JButton("🏠 Beranda");
+        homeButton.setFont(buttonFont);
+        homeButton.setBackground(woodBrown);
+        homeButton.setForeground(Color.WHITE);
+        homeButton.setFocusPainted(false);
         homeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         homeButton.addActionListener(e -> {
             if (sound != null) sound.stop();
@@ -40,21 +45,46 @@ public class EndingScene extends JPanel {
         });
         add(homeButton);
 
-        // Tombol Exit
-        exitButton = new RoundedButton("EXIT");
-        exitButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        exitButton.setForeground(Color.BLACK);
-        exitButton.setBackground(new Color(255, 255, 255, 180));
+        // Tombol MAIN LAGI
+        mainLagiButton = new JButton("🎯 Main Lagi");
+        mainLagiButton.setFont(buttonFont);
+        mainLagiButton.setBackground(woodBrown);
+        mainLagiButton.setForeground(Color.WHITE);
+        mainLagiButton.setFocusPainted(false);
+        mainLagiButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        mainLagiButton.addActionListener(e -> {
+            if (sound != null) sound.stop();
+            frame.changePanel(new ArcheryGame(frame));
+        });
+        add(mainLagiButton);
+
+        // Tombol EXIT
+        exitButton = new JButton("Keluar");
+        exitButton.setFont(buttonFont);
+        exitButton.setBackground(woodBrown);
+        exitButton.setForeground(Color.WHITE);
+        exitButton.setFocusPainted(false);
         exitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         exitButton.addActionListener(e -> showExitDialog());
         add(exitButton);
 
-        // Responsif posisi tombol
+        // Posisi tombol tengah dan berjajar
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 int w = getWidth();
-                homeButton.setBounds(w - 170, 20, 60, 30);
-                exitButton.setBounds(w - 100, 20, 70, 30);
+                int h = getHeight();
+
+                int btnWidth = 160;
+                int btnHeight = 45;
+                int spacing = 15;
+
+                int totalHeight = (btnHeight * 3) + (spacing * 2);
+                int startY = h / 2 + 100 - totalHeight / 2;
+
+                // Urutan: HOME - MAIN LAGI - EXIT
+                homeButton.setBounds(w / 2 - btnWidth / 2, startY, btnWidth, btnHeight);
+                mainLagiButton.setBounds(w / 2 - btnWidth / 2, startY + btnHeight + spacing, btnWidth, btnHeight);
+                exitButton.setBounds(w / 2 - btnWidth / 2, startY + (btnHeight + spacing) * 2, btnWidth, btnHeight);
             }
         });
     }
@@ -64,7 +94,6 @@ public class EndingScene extends JPanel {
         dialog.setUndecorated(true);
         dialog.setSize(400, 380);
         dialog.setLocationRelativeTo(frame);
-        dialog.setBackground(new Color(0, 0, 0, 0));
 
         JPanel panel = new RoundedPanel(30, new Color(255, 255, 255));
         panel.setLayout(null);

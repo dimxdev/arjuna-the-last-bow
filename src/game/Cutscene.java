@@ -10,6 +10,8 @@ import javafx.scene.media.MediaView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class Cutscene extends JPanel {
     private GameFrame frame;
@@ -23,27 +25,37 @@ public class Cutscene extends JPanel {
         add(jfxPanel, BorderLayout.CENTER);
 
         Platform.runLater(this::initFX);
+
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                jfxPanel.setSize(getWidth(), getHeight());
+            }
+        });
     }
 
     private void initFX() {
-        String videoPath = getClass().getResource("/assets/videos/defeated1.mp4").toExternalForm();
-        Media media = new Media(videoPath);
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        MediaView mediaView = new MediaView(mediaPlayer);
+        try {
+            String videoPath = getClass().getResource("/assets/videos/defeated1.mp4").toExternalForm();
+            Media media = new Media(videoPath);
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            MediaView mediaView = new MediaView(mediaPlayer);
 
-        // ⚙️ Responsive: Bind ke scene size
-        Group root = new Group(mediaView);
-        Scene scene = new Scene(root);
+            Group root = new Group(mediaView);
+            Scene scene = new Scene(root);
 
-        mediaView.fitWidthProperty().bind(scene.widthProperty());
-        mediaView.fitHeightProperty().bind(scene.heightProperty());
-        mediaView.setPreserveRatio(true);
+            mediaView.fitWidthProperty().bind(scene.widthProperty());
+            mediaView.fitHeightProperty().bind(scene.heightProperty());
+            mediaView.setPreserveRatio(false); // isi penuh frame
 
-        jfxPanel.setScene(scene);
-        mediaPlayer.play();
+            jfxPanel.setScene(scene);
+            mediaPlayer.play();
 
-        mediaPlayer.setOnEndOfMedia(() -> {
-            SwingUtilities.invokeLater(() -> frame.changePanel(new MonologScene(frame)));
-        });
+            mediaPlayer.setOnEndOfMedia(() -> {
+                SwingUtilities.invokeLater(() -> frame.changePanel(new MonologScene(frame)));
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Gagal memuat video: " + ex.getMessage());
+        }
     }
 }

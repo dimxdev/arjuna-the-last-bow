@@ -13,11 +13,13 @@ public class FinalCeritaScene extends JPanel {
     private int charIndex = 0;
 
     private SoundPlayer typingSound;
+    private Image backgroundImage;
 
     public FinalCeritaScene(GameFrame frame) {
         this.frame = frame;
         setLayout(null);
-        setBackground(Color.BLACK);
+
+        backgroundImage = new ImageIcon(getClass().getResource("/assets/images/bg_kemenangan_panah.png")).getImage();
 
         // Area teks
         textArea = new JTextArea();
@@ -40,7 +42,6 @@ public class FinalCeritaScene extends JPanel {
         Dan meraih kemenangan untuk negerinya!
         """;
 
-        // Suara ketik
         typingSound = new SoundPlayer("/assets/sounds/computer-keyboard-typing.wav");
         typingSound.playLoop();
 
@@ -54,19 +55,16 @@ public class FinalCeritaScene extends JPanel {
         });
         typingTimer.start();
 
-        // Tombol Lanjut → ke EndingScene
         lanjutButton = new RoundedButton("Lanjut ▶");
         lanjutButton.addActionListener(e -> frame.changePanel(new EndingScene(frame)));
         add(lanjutButton);
 
-        // Tombol Exit
         exitButton = new RoundedButton("EXIT");
         exitButton.setForeground(Color.BLACK);
         exitButton.setBackground(new Color(0, 0, 0, 150));
         exitButton.addActionListener(e -> showCustomExitDialog());
         add(exitButton);
 
-        // Tombol 🏠 Home
         homeButton = new RoundedButton("🏠");
         homeButton.setForeground(Color.BLACK);
         homeButton.setBackground(new Color(0, 0, 0, 150));
@@ -77,7 +75,6 @@ public class FinalCeritaScene extends JPanel {
         });
         add(homeButton);
 
-        // Responsif posisi
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 int w = getWidth();
@@ -88,6 +85,12 @@ public class FinalCeritaScene extends JPanel {
                 homeButton.setBounds(w - 180, 20, 60, 30);
             }
         });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
     }
 
     private void showCustomExitDialog() {

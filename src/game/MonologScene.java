@@ -1,8 +1,8 @@
 package game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 public class MonologScene extends JPanel {
     private GameFrame frame;

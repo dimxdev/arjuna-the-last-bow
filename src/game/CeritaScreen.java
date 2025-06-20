@@ -12,25 +12,28 @@ public class CeritaScreen extends JPanel {
     private String fullText;
     private int charIndex = 0;
 
-    private SoundPlayer typingSound; // Suara ketikan
+    private SoundPlayer typingSound;
+    private Image backgroundImage;
 
     public CeritaScreen(GameFrame frame) {
         this.frame = frame;
         setLayout(null);
         setBackground(Color.BLACK);
 
+        // Load background image
+        backgroundImage = new ImageIcon(getClass().getResource("/assets/images/bg_kalah_perang.jpg")).getImage();
+
         // Area teks cerita
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setForeground(Color.WHITE);
-        textArea.setBackground(Color.BLACK);
+        textArea.setBackground(new Color(0, 0, 0, 100)); // transparan gelap
         textArea.setFont(new Font("Serif", Font.PLAIN, 18));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setOpaque(false);
         add(textArea);
 
-        // Isi cerita
         fullText = """
         Setelah kekalahan besar menimpa kerajaannya,
         Arjuna menjadi satu-satunya harapan rakyatnya.
@@ -42,49 +45,51 @@ public class CeritaScreen extends JPanel {
         tetapi pengabdian untuk tanah air dan kehormatan.
         """;
 
-        // Inisialisasi suara ketik dan mulai play loop
         typingSound = new SoundPlayer("/assets/sounds/computer-keyboard-typing.wav");
         typingSound.playLoop();
 
-        // Efek ketik
         typingTimer = new Timer(40, e -> {
             if (charIndex < fullText.length()) {
                 textArea.append(String.valueOf(fullText.charAt(charIndex++)));
             } else {
                 typingTimer.stop();
-                typingSound.stop(); // Stop suara setelah teks selesai diketik
+                typingSound.stop();
             }
         });
         typingTimer.start();
 
-        // Tombol Lanjut
         lanjutButton = new RoundedButton("Lanjut ▶");
         lanjutButton.addActionListener(e -> frame.changePanel(new Cutscene(frame)));
         add(lanjutButton);
 
-        // Tombol Exit
         exitButton = new RoundedButton("EXIT");
         exitButton.setForeground(Color.BLACK);
         exitButton.setBackground(new Color(0, 0, 0, 150));
         exitButton.addActionListener(e -> showCustomExitDialog());
         add(exitButton);
 
-        // Tombol Back
         backButton = new RoundedButton("🏠");
         backButton.setForeground(Color.BLACK);
         backButton.setBackground(new Color(0, 0, 0, 150));
         backButton.addActionListener(e -> {
-            typingSound.stop(); // pastikan suara dihentikan kalau balik
+            typingSound.stop();
             frame.changePanel(new HomeScreen(frame));
         });
         add(backButton);
 
-        // Responsif saat resize
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 resizeComponents();
             }
         });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 
     private void resizeComponents() {
